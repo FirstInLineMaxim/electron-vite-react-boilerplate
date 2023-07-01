@@ -73,13 +73,12 @@ app.whenReady().then(() => {
     );
     videoOptionsMenu.popup();
   });
+
   ipcMain.handle("open-file-dialog", async (event, bufferData) => {
     const { filePath } = await dialog.showSaveDialog({
       buttonLabel: "Save video",
       defaultPath: `vid-${Date.now()}.webm`,
     });
-    console.log(event);
-    console.log(bufferData);
 
     writeFile(filePath, bufferData, (error) => console.log(error));
   });

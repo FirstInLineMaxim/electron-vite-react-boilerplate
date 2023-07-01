@@ -2223,8 +2223,6 @@ electron.app.whenReady().then(() => {
       buttonLabel: "Save video",
       defaultPath: `vid-${Date.now()}.webm`
     });
-    console.log(event);
-    console.log(bufferData);
     lib.writeFile(filePath, bufferData, (error) => console.log(error));
   });
 });

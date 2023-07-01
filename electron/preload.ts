@@ -1,10 +1,4 @@
-import {
-  IpcRenderer,
-  Menu,
-  contextBridge,
-  desktopCapturer,
-  ipcRenderer,
-} from "electron";
+import { IpcRenderer, contextBridge, ipcRenderer } from "electron";
 type IpcRendererEventListener = (
   event: Electron.IpcRendererEvent,
   ...args: any[]
