@@ -1,15 +1,29 @@
-window.addEventListener("DOMContentLoaded", () => {
-  console.log(process.env.VITE_DEV_SERVER_URL);
+import {
+  IpcRenderer,
+  Menu,
+  contextBridge,
+  desktopCapturer,
+  ipcRenderer,
+} from "electron";
+type IpcRendererEventListener = (
+  event: Electron.IpcRendererEvent,
+  ...args: any[]
+) => void;
 
-  console.log("run");
-  console.log(document.getElementById("root"));
-  const replaceText = (selector, text) => {
-    const element = document.getElementById(selector);
-
-    if (element) element.innerText = text;
-  };
-
-  for (const dependency of ["chrome", "node", "electron"]) {
-    replaceText(`${dependency}-version`, process.versions[dependency]);
+// Declare the electron object in the global Window interface
+declare global {
+  interface Window {
+    electron: {
+      ipcRenderer: typeof ipcRenderer;
+      listner: (
+        channel: string,
+        listener: IpcRendererEventListener
+      ) => IpcRenderer;
+    };
   }
+}
+
+contextBridge.exposeInMainWorld("electron", {
+  listner: ipcRenderer.on.bind(ipcRenderer),
+  ipcRenderer: ipcRenderer,
 });

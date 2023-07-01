@@ -1,14 +1,26 @@
-import { app, BrowserWindow, Tray } from "electron";
+import {
+  app,
+  BrowserWindow,
+  contextBridge,
+  desktopCapturer,
+  dialog,
+  ipcMain,
+  ipcRenderer,
+  Menu,
+  Tray,
+} from "electron";
+import { writeFile } from "fs-extra";
 import path from "node:path";
-
+let win;
 const createWindow = () => {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     title: "Main window",
     width: 800,
     height: 600,
     show: false, // Initially hide the main window
     icon: path.join(__dirname, "trayIcon.png"),
     webPreferences: {
+      nodeIntegration: true,
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -46,4 +58,37 @@ app.whenReady().then(() => {
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+
+  ipcMain.handle("openMenu", async (event) => {
+    const inputSources = await desktopCapturer.getSources({
+      types: ["window", "screen"],
+    });
+    const videoOptionsMenu = Menu.buildFromTemplate(
+      inputSources.map((source) => {
+        return {
+          label: source.name,
+          click: () => selectSource(source),
+        };
+      })
+    );
+    videoOptionsMenu.popup();
+  });
+  ipcMain.handle("open-file-dialog", async (event, bufferData) => {
+    const { filePath } = await dialog.showSaveDialog({
+      buttonLabel: "Save video",
+      defaultPath: `vid-${Date.now()}.webm`,
+    });
+    console.log(event);
+    console.log(bufferData);
+
+    writeFile(filePath, bufferData, (error) => console.log(error));
+  });
 });
+
+function selectSource(source: Electron.DesktopCapturerSource): any {
+  console.log("run");
+  win.webContents.send("source", source);
+}
+// ipcMain.handle("sources", async (event, path) => {
+//   console.log(event, path);
+// });
