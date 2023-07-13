@@ -1,17 +1,16 @@
 import {
   app,
   BrowserWindow,
-  contextBridge,
   desktopCapturer,
   dialog,
   ipcMain,
-  ipcRenderer,
   Menu,
   Tray,
 } from "electron";
 import { writeFile } from "fs-extra";
 import path from "node:path";
 let win;
+
 const createWindow = () => {
   win = new BrowserWindow({
     title: "Main window",
@@ -59,7 +58,9 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 
+  
   ipcMain.handle("openMenu", async (event) => {
+    console.log(event);
     const inputSources = await desktopCapturer.getSources({
       types: ["window", "screen"],
     });
@@ -75,6 +76,7 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle("open-file-dialog", async (event, bufferData) => {
+    console.log(event);
     const { filePath } = await dialog.showSaveDialog({
       buttonLabel: "Save video",
       defaultPath: `vid-${Date.now()}.webm`,

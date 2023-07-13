@@ -2205,6 +2205,7 @@ electron.app.whenReady().then(() => {
       createWindow();
   });
   electron.ipcMain.handle("openMenu", async (event) => {
+    console.log(event);
     const inputSources = await electron.desktopCapturer.getSources({
       types: ["window", "screen"]
     });
@@ -2219,6 +2220,7 @@ electron.app.whenReady().then(() => {
     videoOptionsMenu.popup();
   });
   electron.ipcMain.handle("open-file-dialog", async (event, bufferData) => {
+    console.log(event);
     const { filePath } = await electron.dialog.showSaveDialog({
       buttonLabel: "Save video",
       defaultPath: `vid-${Date.now()}.webm`
@@ -2230,3 +2232,4 @@ function selectSource(source) {
   console.log("run");
   win.webContents.send("source", source);
 }
+//# sourceMappingURL=main.js.map

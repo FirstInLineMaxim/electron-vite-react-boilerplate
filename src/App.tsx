@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef, ReactElement } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { writeFile } from "original-fs";
 
 function App() {
   let mediaRecorder;
@@ -17,6 +16,7 @@ function App() {
       const constrains: MediaStreamConstraints = {
         audio: false,
         video: {
+          //@ts-ignore
           mandatory: {
             chromeMediaSource: "desktop",
             chromseMediaSourceId: source.id ? source.id : "",
@@ -39,7 +39,7 @@ function App() {
     console.log("video data avaible");
     recordedChunks.push(e.data);
   }
-  async function handleStop(e: any) {
+  async function handleStop() {
     const blob = new Blob(recordedChunks, {
       type: "video/webm; codecs=vp9",
     });
@@ -76,6 +76,7 @@ function App() {
   const message = async () => {
     await window.electron.ipcRenderer.invoke("openMenu");
     window.electron.listner("source", (event, response) => {
+      console.log(event);
       setSource(response);
     });
   };
